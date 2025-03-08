@@ -1,8 +1,38 @@
--- table structure for table `coaches`
-CREATE TABLE `coaches` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
+-- table structure for table `User`
+CREATE TABLE `User` (
+  `UserID` int(15) NOT NULL AUTO_INCREMENT,
+  `UserName` varchar(20),
+  `FriendUserID` int(15),
+  PRIMARY KEY (`UserID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `Game_User` (
+  `PlayerColor` int(1),
+  `GameID` int(20),
+  `UserID` int(15)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `Game` (
+  `GameID` int(20) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`GameID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `Turn` (
+  `TurnNumber` int(3) NOT NULL AUTO_INCREMENT,
+  `Move` varchar(7),
+  `MoveLegality` int(1),
+  `GameID` int(20) NOT NULL,
+  PRIMARY KEY (`TurnNumber`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `Pieces` (
+  `PieceNumber` int(2) NOT NULL AUTO_INCREMENT,
+  `InitialPosition` int(2),
+  `Type` varchar(10),
+  `State` varchar(10),
+  `CurrentPosition` varchar(2),
+  `CurrentGameID` int(20),
+  PRIMARY KEY (`PieceNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- indexes for table `coaches`
