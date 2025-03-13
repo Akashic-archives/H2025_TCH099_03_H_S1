@@ -3,14 +3,10 @@
 require_once __DIR__.'/router.php';
 
 require 'config.php';
-require './src/controllers/ControllerAcceuil.php';
+require './src/controllers/ControllerMobile.php';
 
-get('/api/activities/random', function() { 
-  ControllerAcceuil::getRandomActivities();
-});
-
-get('/api/activities/$id', function($id) {
-  ControllerAcceuil::getActivitieById($id);
+get('/api/game/mobile/$id', function($id) {
+  ControllerMobile::getGameById($id);
 });
 
 any('/404', function() {

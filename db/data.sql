@@ -7,26 +7,28 @@ INSERT INTO `User` (`UserName`) VALUES
 ('Mhamed')
 ;
 
-INSERT INTO `Game_User` (`PlayerColor`, `GameID`, `UserID`) VALUES
-(1, 1, 1)
-;
-
-INSERT INTO `Game` (`GameID`) VALUES
+INSERT INTO `Game` () VALUES
 (),
 (),
 ()
 ;
 
+INSERT INTO `Game_User` (`PlayerColor`, `GameID`, `UserID`) VALUES
+(1, 1, 1)
+;
+
 INSERT INTO `Turn` (`TurnNumber`, `Move`, `MoveLegality`, `GameID`) VALUES
-(1, ``, 1, 1)
+(1, '1122', 1, 1)
 ;
 
-INSERT INTO `Pieces` (`PieceNumber`, `InitialPosition`, `Type`, `State`, `CurrentPosition`, `CurrentGameID`) VALUES
-(1, 1, ``, ``, ``, 1)
+INSERT INTO `Pieces` (`PieceID`, `PieceNumber`, `InitialPosition`, `Type`, `State`, `CurrentPosition`, `CurrentGameID`) VALUES
+(11, 1, 11, 'rook', 'hidden', 12, 1),
+(11, 1, 11, 'rook', 'revealed', 12, 1),
+(11, 1, 11, 'rook', 'captured', 12, 1)
 ;
 
---UPDATE `User`
---SET `FriendUserID` = 3  -- Set Bob's friend to the user with UserID 3
---WHERE `UserID` = 2;  -- For the user with UserID = 2 (Bob)
+-- UPDATE `User`
+-- SET `FriendUserID` = 3  -- Set Bob's friend to the user with UserID 3
+-- WHERE `UserID` = 2;  -- For the user with UserID = 2 (Bob)
 
 
