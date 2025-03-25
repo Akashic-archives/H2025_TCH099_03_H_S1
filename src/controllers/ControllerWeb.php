@@ -74,7 +74,7 @@ class ControllerWeb{
         }
     }
 
-    public static function getTurn($gameId, $turnNum){
+    public static function getCurrentTurn($gameId, $turnNum){
         global $pdo;
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json; charset=utf-8');

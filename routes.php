@@ -9,9 +9,26 @@ get('/api/game/mobile/$id', function($id) {
   ControllerMobile::getGameById($id);
 });
 
-get('/api/web/web/$id', function($id) {
+get('/api/game/web/$id', function($id) {
   ControllerWeb::getGameById($id);
 });
+
+get('/api/game/users/web/$id', function($id) {
+  ControllerWeb::getUsersInGame($id);
+});
+
+get('/api/game/currentturn/web/$id', function($id) {
+  ControllerWeb::getCurrentTurn($id);
+});
+
+get('/api/game/web', function() {
+  ControllerWeb::getAllGames();
+});
+
+get('/api/game/web/pieces/$id', function($id) {
+  ControllerWeb::getCurrentGamePieces($id);
+});
+
 
 post('/api/web/web/game', function(){
   ControllerWeb::postGame();
