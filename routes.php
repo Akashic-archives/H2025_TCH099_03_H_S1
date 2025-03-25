@@ -9,6 +9,11 @@ get('/api/game/mobile/$id', function($id) {
   ControllerMobile::getGameById($id);
 });
 
+get('/api/web/web/$id', function($id) {
+  ControllerWeb::getGameById($id);
+});
+
+
 any('/404', function() {
   header('Access-Control-Allow-Origin: *');
   header('Content-Type: application/json; charset=utf-8');
