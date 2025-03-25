@@ -13,6 +13,25 @@ get('/api/web/web/$id', function($id) {
   ControllerWeb::getGameById($id);
 });
 
+post('/api/web/web/game', function(){
+  ControllerWeb::postGame();
+});
+post('/api/web/web/user', function(){
+  ControllerWeb::postUser();
+});
+post('/api/web/web/gameuser', function(){
+  ControllerWeb::postGameUser();
+});
+post('/api/web/web/turn', function(){
+  ControllerWeb::postTurn();
+});
+post('/api/web/web/piece', function(){
+  ControllerWeb::postPiece();
+});
+put('/api/web/web/piece', function($id){
+  ControllerWeb::putPiece($id);
+});
+
 
 any('/404', function() {
   header('Access-Control-Allow-Origin: *');

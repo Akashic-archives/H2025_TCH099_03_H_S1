@@ -164,6 +164,98 @@ class ControllerWeb{
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
+    public static function postGame(){
 
+    }
+    public static function postUser(){
+        global $pdo;
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['UserName'])) {
+            echo json_encode(["error" => "incomplete"]);
+            http_response_code(400);
+            return;
+        }
+        try {
+            $stmt = $pdo->prepare("INSERT INTO User (UserName) VALUES (?)");
+            $stmt->execute([$data['UserName']]);
+            echo json_encode(['success' => true, 'message' => 'posted']);
+            } catch (PDOException $e) {
+                echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+                http_response_code(500);
+        }
+    }
+    public static function postGameUser(){
+        global $pdo;
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['PlayerColor'], $data['GameID'], $data['UserID'])) {
+            echo json_encode(["error" => "incomplete"]);
+            http_response_code(400);
+            return;
+        }
+        try {
+            $stmt = $pdo->prepare("INSERT INTO Game_User (PlayerColor,GameID,UserID) VALUES (?,?,?)");
+            $stmt->execute([$data['PlayerColor'],$data['GameID'],$data['UserID']]);
+            echo json_encode(['success' => true, 'message' => 'posted']);
+            } catch (PDOException $e) {
+                echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+                http_response_code(500);
+        }
+    }
 
+//Keeps track of all of the moves of all the games
+    public static function postTurn(){
+        global $pdo;
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['Move'], $data['MoveLegality'], $data['GameID'])) {
+            echo json_encode(["error" => "incomplete"]);
+            http_response_code(400);
+            return;
+        }
+        //Do I put GameID in the insert?
+        try {
+            $stmt = $pdo->prepare("INSERT INTO Turn (Move,MoveLegality,GameID) VALUES (?,?,?)");
+            $stmt->execute([$data['Move'],$data['MoveLegality'],$data['GameID']]);
+            echo json_encode(['success' => true, 'message' => 'posted']);
+            } catch (PDOException $e) {
+                echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+                http_response_code(500);
+        }
+    }
+
+    public static function postPiece(){
+        global $pdo;
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['PieceID'], $data['PieceNumber'], $data['InitialPosition'], $data['Type'],$data['State'],$data['CurrentPosition'],$data['CurrentGameID'])) {
+            echo json_encode(["error" => "incomplete"]);
+            http_response_code(400);
+            return;
+        }
+        try {
+        $stmt = $pdo->prepare("INSERT INTO Pieces (PieceID, PieceNumber, InitialPosition, Type,State, CurrentPosition, CurrentGameID) VALUES (?, ?, ?, ?,?,?,?)");
+        $stmt->execute([$data['PieceID'], $data['PieceNumber'], $data['InitialPosition'], $data['Type'],$data['State'],$data['CurrentPosition'],$data['CurrentGameID']]);
+        echo json_encode(['success' => true, 'message' => 'posted']);
+        } catch (PDOException $e) {
+            echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+            http_response_code(500);
+        }
+    }
+//Used to modify the information on every move
+    public static function putPiece($id){
+        global $pdo;
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!isset($data['PieceID'], $data['PieceNumber'], $data['InitialPosition'], $data['Type'],$data['State'],$data['CurrentPosition'],$data['CurrentGameID'])) {
+            echo json_encode(["error" => "incomplete"]);
+            http_response_code(400);
+            return;
+        }
+        try {
+            $stmt = $pdo->prepare("UPDATE Pieces (PieceID, PieceNumber, InitialPosition, Type,State, CurrentPosition, CurrentGameID) VALUES (?, ?, ?, ?,?,?,?)");
+            $stmt->execute([$data['PieceID'], $data['PieceNumber'], $data['InitialPosition'], $data['Type'],$data['State'],$data['CurrentPosition'],$data['CurrentGameID']]);
+            echo json_encode(['success' => true, 'message' => 'Piece updated']);
+        } catch (PDOException $e) {
+            echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+            http_response_code(500);
+        }
+    }
 }
