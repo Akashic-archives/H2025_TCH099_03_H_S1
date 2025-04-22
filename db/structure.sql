@@ -15,7 +15,7 @@ CREATE TABLE `Game` (
   `GameID` int(20) NOT NULL AUTO_INCREMENT,
   `WinnerID` int(15),
   PRIMARY KEY (`GameID`),
-  FOREIGN KEY (`UserID`) REFERENCES `User` (`UserID`)
+  FOREIGN KEY (`WinnerID`) REFERENCES `User` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `Game_User` (
