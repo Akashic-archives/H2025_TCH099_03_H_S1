@@ -36,22 +36,22 @@ get('/api/game/web/pieces/$id', function($id) {
 });
 
 
-post('/api/web/web/game', function(){
+post('/api/web/game', function(){
   ControllerWeb::postGame();
 });
-post('/api/web/web/user', function(){
+post('/api/web/user', function(){
   ControllerWeb::postUser();
 });
-post('/api/web/web/gameuser', function(){
+post('/api/web/gameuser', function(){
   ControllerWeb::postGameUser();
 });
-post('/api/web/web/turn', function(){
+post('/api/web/turn', function(){
   ControllerWeb::postTurn();
 });
-post('/api/web/web/piece', function(){
+post('/api/web/piece', function(){
   ControllerWeb::postPiece();
 });
-put('/api/web/web/piece', function($id){
+put('/api/web/piece', function($id){
   ControllerWeb::putPiece($id);
 });
 

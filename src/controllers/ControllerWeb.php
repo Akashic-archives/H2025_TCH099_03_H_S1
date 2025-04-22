@@ -185,14 +185,16 @@ class ControllerWeb{
     public static function postUser(){
         global $pdo;
         $data = json_decode(file_get_contents('php://input'), true);
-        if (!isset($data['UserName'])) {
+        echo json_encode([$data['Username'], $data['Email'], $data['Password'], $data['Name'], $data['LastName']]);
+
+        if (!isset($data['Username']) || !isset($data['Email']) || !isset($data['Password']) || !isset($data['Name']) || !isset($data['LastName'])) {
             echo json_encode(["error" => "incomplete"]);
             http_response_code(400);
             return;
         }
         try {
-            $stmt = $pdo->prepare("INSERT INTO User (UserName) VALUES (?)");
-            $stmt->execute([$data['UserName']]);
+            $stmt = $pdo->prepare("INSERT INTO User (UserName, Email, Password, Name, LastName) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$data['Username'], $data['Email'], $data['Password'], $data['Name'], $data['LastName']]);
             echo json_encode(['success' => true, 'message' => 'posted']);
             } catch (PDOException $e) {
                 echo json_encode(["error" => "Database error: " . $e->getMessage()]);
