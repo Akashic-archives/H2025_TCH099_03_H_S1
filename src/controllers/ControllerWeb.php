@@ -132,6 +132,21 @@ class ControllerWeb{
         }
     }
 
+    public static function getAllUsers(){
+        global $pdo;
+        header('Access-Control-Allow-Origin: *');
+        header('Content-Type: application/json; charset=utf-8');
+
+        try {
+
+            echo json_encode($pdo->query('SELECT * from User')->fetchALL());
+
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
     public static function getCurrentGamePieces($gameId) {
         global $pdo;
         header('Access-Control-Allow-Origin: *');

@@ -4,6 +4,7 @@ require_once __DIR__.'/router.php';
 
 require 'config.php';
 require './src/controllers/ControllerMobile.php';
+require './src/controllers/ControllerWeb.php';
 
 get('/api/game/mobile/$id', function($id) {
   ControllerMobile::getGameById($id);
@@ -24,6 +25,11 @@ get('/api/game/currentturn/web/$id', function($id) {
 get('/api/game/web', function() {
   ControllerWeb::getAllGames();
 });
+
+get('/api/user/web', function() {
+  ControllerWeb::getAllUsers();
+});
+
 
 get('/api/game/web/pieces/$id', function($id) {
   ControllerWeb::getCurrentGamePieces($id);
