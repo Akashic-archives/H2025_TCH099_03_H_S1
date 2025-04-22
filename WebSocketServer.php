@@ -18,6 +18,10 @@ class WebSocketServer implements MessageComponentInterface {
 
         // Database connection (adjust as needed)
         $this->db = new PDO('mysql:host=db;dbname=mydatabase', 'user', 'password');
+
+	// TODO: for the db, i think about using the api??? security through obscurity
+	// to see, local object in websocket php, api call
+	// OR everything is send to the db directely
     }
 
     public function onOpen(ConnectionInterface $conn) {

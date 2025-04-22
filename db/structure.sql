@@ -1,15 +1,21 @@
 -- table structure for table `User`
 CREATE TABLE `User` (
   `UserID` int(15) NOT NULL AUTO_INCREMENT,
-  `UserName` varchar(20),
+  `UserName` varchar(20) NOT NULL,
   `FriendUserID` int(15),
+  `Email` varchar(50) NOT NULL,
+  `Password` varchar(50) NOT NULL,
+  `Name` varchar(50) NOT NULL,
+  `LastName` varchar(50) NOT NULL,
   PRIMARY KEY (`UserID`),
   FOREIGN KEY (`FriendUserID`) REFERENCES `User` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `Game` (
   `GameID` int(20) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`GameID`)
+  `WinnerID` int(15),
+  PRIMARY KEY (`GameID`),
+  FOREIGN KEY (`UserID`) REFERENCES `User` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `Game_User` (
