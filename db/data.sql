@@ -1,10 +1,10 @@
 -- dumping data for table
 
-INSERT INTO `User` (`UserName`) VALUES
-('Pablo'),
-('Mark'),
-('Ekrem'),
-('Mhamed')
+INSERT INTO `User` (`UserName`, `Email`, `Password`, `Name`, `LastName`) VALUES
+('Pablo', 'pablo@local.local', '123', 'Pablo', 'Pablo'),
+('Mark', 'mark@local.local', '123', 'Mark', 'Mark'),
+('Ekrem', 'ekrem@local.local', '123', 'Ekrem', 'Ekrem'),
+('Mhamed', 'mhamed@local.local', '123', 'Mhamed', 'Mhamed')
 ;
 
 INSERT INTO `Game` () VALUES
