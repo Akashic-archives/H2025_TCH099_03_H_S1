@@ -1,82 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Client</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        #messages {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            min-height: 100px;
-            background-color: #f9f9f9;
-            max-width: 500px;
-        }
-        #messages p {
-            margin: 5px 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Matchmaking Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    #status { font-weight: bold; }
+    #pingBtn { margin-top: 10px; }
+  </style>
 </head>
 <body>
-    <h1>WebSocket Interaction</h1>
-    <div>
-        <button onclick="sendMessage()">Send Message to Server</button>
-    </div>
-    <div id="messages">
-        <p><strong>Messages:</strong></p>
-    </div>
+  <h1>WebSocket Matchmaking Test</h1>
+  
+  <label for="userID">User ID:</label>
+  <input type="text" id="userID" placeholder="Enter your user ID" />
+  <button onclick="connect()">Connect</button>
 
-    <script>
-        // Create WebSocket connection.
-        let socket;
+  <p>Status: <span id="status">Not connected</span></p>
+  <button id="pingBtn" onclick="sendPing()" disabled>Send Ping to Opponent</button>
 
-        try {
-            socket = new WebSocket('ws://localhost:8080');
+  <ul id="log"></ul>
 
-            // Select the messages container where WebSocket messages will be displayed.
-            const messagesContainer = document.getElementById('messages');
+  <script>
+    let socket;
+    let currentUserID;
 
-            socket.onopen = () => {
-                addMessage('Connected to WebSocket server');
-            };
+    function log(msg) {
+      const li = document.createElement('li');
+      li.textContent = msg;
+      document.getElementById('log').appendChild(li);
+    }
 
-            socket.onmessage = (event) => {
-                addMessage(`Received from server: ${event.data}`);
-            };
+    function connect() {
+      currentUserID = document.getElementById('userID').value.trim();
+      if (!currentUserID) {
+        alert("Please enter a user ID");
+        return;
+      }
 
-            socket.onerror = (error) => {
-                addMessage('WebSocket error: ' + error.message);
-                console.error('WebSocket error:', error);
-            };
+      socket = new WebSocket("ws://localhost:8080");
 
-            socket.onclose = () => {
-                addMessage('Disconnected from WebSocket server');
-            };
+      socket.onopen = () => {
+        log("Connected to server");
+        socket.send(JSON.stringify({ type: "join", userID: currentUserID }));
+        document.getElementById('status').textContent = "Waiting for match...";
+      };
 
-            // Function to display a message in the messages container
-            function addMessage(message) {
-                const messageElement = document.createElement('p');
-                messageElement.textContent = message;
-                messagesContainer.appendChild(messageElement);
-            }
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
 
-            // Function to send a message to the WebSocket server
-            function sendMessage() {
-                if (socket.readyState === WebSocket.OPEN) {
-                    socket.send('Hello from the client!');
-                    addMessage('Sent to server: Hello from the client!');
-                } else {
-                    addMessage('WebSocket is not open. Unable to send message.');
-                }
-            }
-        } catch (error) {
-            addMessage('WebSocket connection failed: ' + error.message);
+        if (data.type === 'matched') {
+          document.getElementById('status').textContent = "Matched with: " + data.opponent;
+          document.getElementById('pingBtn').disabled = false;
+          log(`Matched with ${data.opponent}`);
+        } else if (data.type === 'ping') {
+          log(`Ping received from ${data.from}`);
+        } else if (data.type === 'opponent_disconnected') {
+          document.getElementById('status').textContent = "Opponent disconnected. Waiting for match...";
+          document.getElementById('pingBtn').disabled = true;
+          log("Opponent disconnected");
         }
-    </script>
+      };
+
+      socket.onclose = () => {
+        log("Disconnected from server");
+        document.getElementById('status').textContent = "Disconnected";
+        document.getElementById('pingBtn').disabled = true;
+      };
+    }
+
+    function sendPing() {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: "ping", userID: currentUserID }));
+        log("Ping sent to opponent");
+      }
+    }
+  </script>
 </body>
 </html>
