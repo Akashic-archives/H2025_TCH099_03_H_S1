@@ -117,33 +117,31 @@ class ControllerWeb{
 
         try {
 
-            $games = $stmt->execute('SELECT * FROM Game');
+            echo json_encode($pdo->query('SELECT * from Game')->fetchALL());
 
-            $games = $stmt->fetch(PDO::FETCH_ASSOC);
-
-	    if ($games) {
-		    echo json_encode($games);  // Return the activity data as JSON
-            } else {
-                echo json_encode(['error' => 'No games were found']);
-            }
+	
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
 
-    public static function getAllUsers(){
+    public static function getUserPasswordByEmail($email){
         global $pdo;
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json; charset=utf-8');
 
-        try {
-
-            echo json_encode($pdo->query('SELECT * from User')->fetchALL());
-
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+        if(isset($email)){
+            try {
+                echo json_encode($pdo->query("SELECT Password FROM User WHERE Email = '$email' ")->fetchALL());
+            }
+            catch(PDOException $e) {
+                http_response_code(500);
+                echo json_encode(['error' => $e->getMessage()]);
+            }
+        }
+        else {
+            echo json_encode(['error' => "There is no account set for this email"]);
         }
     }
 
@@ -188,7 +186,7 @@ class ControllerWeb{
         echo json_encode([$data['Username'], $data['Email'], $data['Password'], $data['Name'], $data['LastName']]);
 
         if (!isset($data['Username']) || !isset($data['Email']) || !isset($data['Password']) || !isset($data['Name']) || !isset($data['LastName'])) {
-            echo json_encode(["error" => "incomplete"]);
+            echo json_encode("Incomplete");
             http_response_code(400);
             return;
         }

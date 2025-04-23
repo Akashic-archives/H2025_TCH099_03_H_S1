@@ -26,10 +26,9 @@ get('/api/game/web', function() {
   ControllerWeb::getAllGames();
 });
 
-get('/api/user/web', function() {
-  ControllerWeb::getAllUsers();
+get('/api/user/$email', function($email) {
+  ControllerWeb::getUserPasswordByEmail($email);
 });
-
 
 get('/api/game/web/pieces/$id', function($id) {
   ControllerWeb::getCurrentGamePieces($id);
