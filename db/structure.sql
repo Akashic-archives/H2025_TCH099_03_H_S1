@@ -31,7 +31,6 @@ CREATE TABLE `Turn` (
   `Move` varchar(10),
   `MoveLegality` int(1),
   `GameID` int(20) NOT NULL,
-  PRIMARY KEY (`TurnNumber`),
   FOREIGN KEY (`GameID`) REFERENCES `Game` (`GameID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

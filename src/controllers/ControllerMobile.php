@@ -13,24 +13,16 @@ class ControllerMobile{
                 return;
             }
 
-            $query = 'SELECT PieceNumber, InitialPosition, Type, State, CurrentPosition FROM Pieces WHERE CurrentGameID = :id';
-
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
-            $stmt->execute();
-
-            $Pieces = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            $query = 'SELECT TurnNumber, Move, MoveLegality, GameID FROM Turn WHERE GameID = :id';
+            $query = 'SELECT * FROM Pieces JOIN Turn ON Pieces.CurrentGameID = Turn.GameID
+                        JOIN Game_User ON Game_User.GameID = Turn.GameID
+                        Join Game ON Game.GameID = Game_User.GameID WHERE CurrentGameID = :id';
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
-            $Turn = $stmt->fetch(PDO::FETCH_ASSOC);
+            $Everything = $stmt->fetchall(PDO::FETCH_ASSOC);
 
-	    if ($Pieces) {
-		    echo json_encode($Pieces);  // Return the activity data as JSON
-		    echo json_encode($Turn);
+	    if ($Everything) {
+		    echo json_encode($Everything);
             } else {
                 echo json_encode(['error' => 'Game not found']);
             }
