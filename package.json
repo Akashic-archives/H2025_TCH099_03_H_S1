@@ -1,0 +1,23 @@
+{
+  "name": "h2025_tch099_03_h_s1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "websocketjs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Akashic-archives/H2025_TCH099_03_H_S1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Akashic-archives/H2025_TCH099_03_H_S1/issues"
+  },
+  "homepage": "https://github.com/Akashic-archives/H2025_TCH099_03_H_S1#readme",
+  "dependencies": {
+    "ws": "^8.18.1"
+  }
+}

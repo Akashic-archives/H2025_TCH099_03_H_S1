@@ -1,0 +1,5 @@
+
+https://www.sitepoint.com/building-live-score-widget-using-php-web-sockets/
+https://github.com/ratchetphp/Ratchet
+http://socketo.me/
+
