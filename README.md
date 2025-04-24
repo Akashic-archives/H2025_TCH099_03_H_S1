@@ -1,6 +1,6 @@
 # TCH099-backend
 
-Voici, pour notre projet intégrateur, un jeu d'échecs qui combine le jeux liar's chess.
+Voici, pour notre projet intégrateur, un jeu d'échecs qui combine le jeu liar's chess.
 On doit mentir pour gagner. On peut bluff le mouvement qu'on fait.
 
 ### Installer le backend
