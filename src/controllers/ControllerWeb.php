@@ -128,82 +128,47 @@ class ControllerWeb{
         }
     }
 
-    public static function postPieceById($id){
+    public static function postPiece(){
         global $pdo;
-        header('Access-Control-Allow-Origin: *');
-        header('Content-Type: application/json; charset=utf-8');
 
-        try {
+        $data = json_decode(file_get_contents('php://input'), true);
 
-            if (!$id) {
-                echo json_encode(['error' => 'Game ID is required']);
-                return;
-            }
-
-            $query = 'SELECT PieceNumber, InitialPosition, Type, State, CurrentPosition FROM Pieces WHERE CurrentGameID = :id';
-
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
-            $stmt->execute();
-
-            $Pieces = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            $query = 'SELECT TurnNumber, Move, MoveLegality, GameID FROM Turn WHERE GameID = :id';
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-            $Turn = $stmt->fetch(PDO::FETCH_ASSOC);
-
-	    if ($Pieces) {
-		    echo json_encode($Pieces);  // Return the activity data as JSON
-		    echo json_encode($Turn);
-            } else {
-                echo json_encode(['error' => 'Game not found']);
-            }
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+        if (!isset($data['PieceID']) || !isset($data['PieceNumber']) || !isset($data['InitialPosition']) || !isset($data['Type']) 
+            || !isset($data['State']) || !isset($data['CurrentPosition']) || !isset($data['CurrentGameID'])) {
+            echo json_encode(["error" => "incomplete"]);
+            http_response_code(400);
+            return;
         }
-    } // TODO: TODO
+        try {
+        $stmt = $pdo->prepare("INSERT INTO Pieces (PieceID, PieceNumber, InitialPosition, 'Type', 'State', CurrentPosition, 
+        CurrentGameID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$data['PieceID'], $data['PieceNumber'], $data['InitialPosition'], $data['Type'], $data['State'], 
+        $data['CurrentPosition'], $data['CurrentGameID']]);
+        echo json_encode(['success' => true, 'message' => 'posted']);
+        } catch (PDOException $e) {
+            echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+            http_response_code(500);
+        }
+    }
 
-    public static function postTurnById($id){
+    public static function postTurn(){
         global $pdo;
-        header('Access-Control-Allow-Origin: *');
-        header('Content-Type: application/json; charset=utf-8');
 
-        try {
+        $data = json_decode(file_get_contents('php://input'), true);
 
-            if (!$id) {
-                echo json_encode(['error' => 'Game ID is required']);
-                return;
-            }
-
-            $query = 'SELECT PieceNumber, InitialPosition, Type, State, CurrentPosition FROM Pieces WHERE CurrentGameID = :id';
-
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
-            $stmt->execute();
-
-            $Pieces = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            $query = 'SELECT TurnNumber, Move, MoveLegality, GameID FROM Turn WHERE GameID = :id';
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-            $Turn = $stmt->fetch(PDO::FETCH_ASSOC);
-
-	    if ($Pieces) {
-		    echo json_encode($Pieces);  // Return the activity data as JSON
-		    echo json_encode($Turn);
-            } else {
-                echo json_encode(['error' => 'Game not found']);
-            }
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+        if (!isset($data['TurnNumber']) || !isset($data['Move']) || !isset($data['MoveLegality']) || !isset($data['GameID'])) {
+            echo json_encode(["error" => "incomplete"]);
+            http_response_code(400);
+            return;
         }
-    } // TODO: TODO
+        try {
+        $stmt = $pdo->prepare("INSERT INTO Turn (TurnNumber, 'Move', MoveLegality, GameID) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$data['TurnNumber'], $data['Move'], $data['InitialPosition'], $data['MoveLegality']]);
+        echo json_encode(['success' => true, 'message' => 'posted']);
+        } catch (PDOException $e) {
+            echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+            http_response_code(500);
+        }
+    }
 
 }

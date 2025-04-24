@@ -26,12 +26,12 @@ get('/api/web/getLastTwoMoves/$id', function($id) {
   ControllerWeb::getLastTwoMovesByGameId($id);
 });
 
-post('/api/web/piece/$id', function($id) {
-  ControllerWeb::postPieceById($id);
+post('/api/web/piece/', function() {
+  ControllerWeb::postPiece();
 });
 
-post('/api/web/turn/$id', function($id) {
-  ControllerWeb::postTurnById($id);
+post('/api/web/turn/', function() {
+  ControllerWeb::postTurn();
 });
 
 any('/404', function() {
