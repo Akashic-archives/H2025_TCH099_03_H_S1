@@ -13,8 +13,10 @@ INSERT INTO `Game` () VALUES
 ()
 ;
 
-INSERT INTO `Game_User` (`PlayerColor`, `GameID`, `UserID`) VALUES
-(1, 1, 1)
+INSERT INTO `Game_User` (`Player_black`, `Player_white`, `GameID`) VALUES
+(1, 2, 1),
+(2, 1, 2),
+(4, 3, 3)
 ;
 
 INSERT INTO `Turn` (`TurnNumber`, `Move`, `MoveLegality`, `GameID`) VALUES

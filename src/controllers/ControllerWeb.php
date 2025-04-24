@@ -126,14 +126,15 @@ class ControllerWeb{
         }
     }
 
-    public static function getUserPasswordByEmail($email){
+    public static function getUserByEmail($email){
         global $pdo;
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json; charset=utf-8');
 
         if(isset($email)){
+
             try {
-                echo json_encode($pdo->query("SELECT Password FROM User WHERE Email = '$email' ")->fetchALL());
+                echo json_encode($pdo->query("SELECT * FROM User WHERE Email = '$email' ")->fetchALL());
             }
             catch(PDOException $e) {
                 http_response_code(500);
@@ -144,6 +145,49 @@ class ControllerWeb{
             echo json_encode(['error' => "There is no account set for this email"]);
         }
     }
+
+    public static function getUserNameFromID($id){
+        global $pdo;
+        header('Access-Control-Allow-Origin: *');
+        header('Content-Type: application/json; charset=utf-8');
+
+        if(isset($id)){
+            try {
+                echo json_encode($pdo->query("SELECT UserName FROM User WHERE UserID = $id ")->fetchALL());
+            }
+            catch(PDOException $e) {
+                http_response_code(500);
+                echo json_encode(['error' => $e->getMessage()]);
+            }
+        }
+        else {
+            echo json_encode(['error' => "There is no account set for this ID"]);
+        }
+    }
+
+    
+
+    public static function getPlayersByGameUser($id){
+        global $pdo;
+        header('Access-Control-Allow-Origin: *');
+        header('Content-Type: application/json; charset=utf-8');
+
+        if(isset($id)){
+            try {
+                echo json_encode($pdo->query("SELECT Player_black, Player_white FROM Game_User 
+                WHERE Player_white = $id OR Player_black = $id")->fetchALL());
+            
+            }
+            catch(PDOException $e) {
+                http_response_code(500);
+                echo json_encode(['error' => $e->getMessage()]);
+            }
+        }
+        else {
+            echo json_encode(['error' => "There is no ID set"]);
+        }
+    }
+
 
     public static function getCurrentGamePieces($gameId) {
         global $pdo;
@@ -177,27 +221,44 @@ class ControllerWeb{
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
+
+
+
     public static function postGame(){
 
     }
     public static function postUser(){
         global $pdo;
-        $data = json_decode(file_get_contents('php://input'), true);
-        echo json_encode([$data['Username'], $data['Email'], $data['Password'], $data['Name'], $data['LastName']]);
+        header('Access-Control-Allow-Origin: *');
+        header('Content-Type: application/json; charset=utf-8');
 
-        if (!isset($data['Username']) || !isset($data['Email']) || !isset($data['Password']) || !isset($data['Name']) || !isset($data['LastName'])) {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!isset($data['UserName']) || !isset($data['Email']) || !isset($data['Password']) || !isset($data['Name']) || !isset($data['LastName'])) {
             echo json_encode("Incomplete");
             http_response_code(400);
             return;
         }
-        try {
+
+        $email = $data['Email'];
+        $exist = json_encode($pdo->query("SELECT * FROM User WHERE Email = '$email' ")->fetchALL());
+        if($exist != null){
+            echo json_encode(["error" => "Exists"]);
+        }
+        else{
+            try {
             $stmt = $pdo->prepare("INSERT INTO User (UserName, Email, Password, Name, LastName) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$data['Username'], $data['Email'], $data['Password'], $data['Name'], $data['LastName']]);
-            echo json_encode(['success' => true, 'message' => 'posted']);
+            $stmt->execute([$data['UserName'], $data['Email'], $data['Password'], $data['Name'], $data['LastName']]);
+
+            $email = $data['Email'];
+            echo json_encode($pdo->query("SELECT * FROM User WHERE Email = '$email' ")->fetchALL());
+
             } catch (PDOException $e) {
                 echo json_encode(["error" => "Database error: " . $e->getMessage()]);
                 http_response_code(500);
         }
+        }
+        
     }
     public static function postGameUser(){
         global $pdo;

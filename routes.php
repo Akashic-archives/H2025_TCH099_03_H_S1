@@ -27,12 +27,21 @@ get('/api/game/web', function() {
 });
 
 get('/api/user/$email', function($email) {
-  ControllerWeb::getUserPasswordByEmail($email);
+  ControllerWeb::getUserByEmail($email);
 });
 
 get('/api/game/web/pieces/$id', function($id) {
   ControllerWeb::getCurrentGamePieces($id);
 });
+
+get('/api/user/games/$id', function($id) {
+  ControllerWeb::getPlayersByGameUser($id);
+});
+
+get('/api/user/id/$id', function($id) {
+  ControllerWeb::getUserNameFromID($id);
+});
+
 
 
 post('/api/web/game', function(){

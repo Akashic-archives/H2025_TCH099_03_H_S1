@@ -19,11 +19,12 @@ CREATE TABLE `Game` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `Game_User` (
-  `PlayerColor` int(1),
   `GameID` int(20) NOT NULL,
-  `UserID` int(15) NOT NULL,
+  `Player_black` int(15) NOT NULL,
+  `Player_white` int(15) NOT NULL,
   FOREIGN KEY (`GameID`) REFERENCES `Game` (`GameID`),
-  FOREIGN KEY (`UserID`) REFERENCES `User` (`UserID`)
+  FOREIGN KEY (`Player_black`) REFERENCES `User` (`UserID`),
+  FOREIGN KEY (`Player_white`) REFERENCES `User` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `Turn` (
