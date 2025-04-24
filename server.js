@@ -21,6 +21,7 @@ function joinGame(gameId, playerSocket) {
     }
     return false;
 }
+
 function getOpponent(gameId, sender){
     const game = games.get(gameId);
     if (!game) return null;
@@ -45,6 +46,42 @@ function broadcast(gameId, data, sender) {
         }
     }
 }
+function sendBluff(gameId, data, sender){
+    const game = games.get(gameId);
+    if (!game) return;
+
+    for (const player of game) {
+        if (player !== sender && player.readyState === WebSocket.OPEN) {
+          let tp = data.type;
+            player.send(JSON.stringify({ type: tp}));
+        }
+    }
+}
+function sendBluffAnswer(gameId, data, sender){
+    const game = games.get(gameId);
+    if (!game) return;
+
+    for (const player of game) {
+        if (player !== sender && player.readyState === WebSocket.OPEN) {
+          let tp = data.type;
+          let ans = data.answer;
+          let rev = data.rev;
+          let tk= data.tk;
+            player.send(JSON.stringify({ type: tp, answer: ans, reveal:rev, takenPiece:tk}));
+        }
+    }
+}
+function endgame(gameId, data, sender){
+    const game = games.get(gameId);
+    if (!game) return;
+    let win = data.winner;
+    for (const player of game) {
+        if (player !== sender && player.readyState === WebSocket.OPEN) {
+            player.send(JSON.stringify({ type: "gameover", winner: win}));
+        }
+    }
+}
+
 
 server.on('connection', (socket) => {
     let currentGameId = null;
@@ -88,16 +125,21 @@ server.on('connection', (socket) => {
                 }
                 console.log(`${userID} joined`);
                 break;
-
+            case 'bluffanswer':
+                sendBluffAnswer(currentGameId, msg, socket);
+                break;
             case 'move':
               console.log(msg);
               
                 broadcast(currentGameId, msg, socket);
 
                 break;
-                
+            case 'gameover':
+                endgame(currentGameId, msg, socket);
+                games.delete(currentGameId);
+                break;
             case 'bluff':
-
+                sendBluff(currentGameId, msg, socket);
                 break;
             default:
                 socket.send(JSON.stringify({ type: 'error', message: 'Unknown command' }));
