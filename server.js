@@ -1,63 +1,115 @@
+// server.js
 const WebSocket = require('ws');
+const server = new WebSocket.Server({ port: 3000 });
 
-const wss = new WebSocket.Server({ port: 8080 });
-const waitingPlayers = [];
-const matches = new Map(); // userID -> opponent's WebSocket
+let players = [];
+let games = new Map(); // key: gameId, value: [player1Socket, player2Socket]
+var waitingOpponent = [];
 
-function onMatch(player1, player2, userID1, userID2) {
-  console.log(`Matched: ${userID1} vs ${userID2}`);
-  matches.set(userID1, player2);
-  matches.set(userID2, player1);
-
-  player1.send(JSON.stringify({ type: 'matched', opponent: userID2 }));
-  player2.send(JSON.stringify({ type: 'matched', opponent: userID1 }));
+function createGame(playerSocket) {
+    const gameId = Math.random().toString(36).substring(2, 10);
+    games.set(gameId, [playerSocket]);
+    waitingOpponent.push(gameId);
+    return gameId;
 }
 
-wss.on('connection', (ws) => {
-  let userID = null;
-
-  ws.on('message', (msg) => {
-    try {
-      const data = JSON.parse(msg);
-      if (data.type === 'join' && data.userID) {
-        userID = data.userID;
-        ws.userID = userID;
-        console.log(`${userID} joined`);
-
-        if (waitingPlayers.length > 0) {
-          const opponent = waitingPlayers.shift();
-          const opponentID = opponent.userID;
-          onMatch(ws, opponent, userID, opponentID);
-        } else {
-          waitingPlayers.push(ws);
-        }
-      }
-
-      if (data.type === 'ping' && data.userID) {
-        const opponentSocket = matches.get(data.userID);
-        if (opponentSocket && opponentSocket.readyState === WebSocket.OPEN) {
-          opponentSocket.send(JSON.stringify({ type: 'ping', from: data.userID }));
-        }
-      }
-    } catch (e) {
-      console.error('Invalid message:', msg);
+function joinGame(gameId, playerSocket) {
+    const game = games.get(gameId);
+    if (game && game.length === 1) {
+        game.push(playerSocket);
+        return true;
     }
-  });
+    return false;
+}
+function getOpponent(gameId, sender){
+    const game = games.get(gameId);
+    if (!game) return null;
 
-  ws.on('close', () => {
-    console.log(`${userID} disconnected`);
-    // Remove from waiting list
-    const index = waitingPlayers.indexOf(ws);
-    if (index !== -1) waitingPlayers.splice(index, 1);
-
-    // Remove matches
-    if (userID && matches.has(userID)) {
-      const opponent = matches.get(userID);
-      if (opponent.readyState === WebSocket.OPEN) {
-        opponent.send(JSON.stringify({ type: 'opponent_disconnected' }));
-      }
-      matches.delete(opponent.userID);
-      matches.delete(userID);
+    for (const player of game) {
+        if (player !== sender) return player;
     }
-  });
+
+    return null;
+}
+
+function broadcast(gameId, data, sender) {
+    const game = games.get(gameId);
+    if (!game) return;
+
+    for (const player of game) {
+        if (player !== sender && player.readyState === WebSocket.OPEN) {
+          let tp = data.type;
+          let t = data.to;
+          let f = data.from
+            player.send(JSON.stringify({ type: tp, from: f, to: t}));
+        }
+    }
+}
+
+server.on('connection', (socket) => {
+    let currentGameId = null;
+    let playerColor = null;
+    let userID = null;
+
+    socket.on('message', (message) => {
+        let msg;
+
+        try {
+            msg = JSON.parse(message);
+        } catch (e) {
+            console.error('Invalid message:', message);
+            return;
+        }
+
+        switch (msg.type) {
+            case 'join':
+                userID = msg.userID;
+                if(waitingOpponent.length>0){
+                    const gameIdToJoin = waitingOpponent.shift();
+                    if (joinGame(gameIdToJoin, socket)) {
+                        currentGameId = gameIdToJoin;
+                        playerColor = 'black';
+                        let opponentSocket = getOpponent(currentGameId, socket); 
+                        socket.send(JSON.stringify({ type: 'joined', gameId: currentGameId, color: playerColor }));
+                        socket.send(JSON.stringify({ type: 'start', color: 'black' }));
+
+                        // Notify white player
+                        const [whiteSocket] = games.get(currentGameId);
+    
+                        if (whiteSocket.readyState === WebSocket.OPEN) {
+                            whiteSocket.send(JSON.stringify({ type: 'start', color: 'white' }));
+                        }
+                        waitingOpponent.pop();
+                    } else {
+                        socket.send(JSON.stringify({ type: 'error', message: 'Unable to join game' }));
+                    }
+                }else{
+                    currentGameId = createGame(socket);
+                }
+                console.log(`${userID} joined`);
+                break;
+
+            case 'move':
+              console.log(msg);
+              
+                broadcast(currentGameId, msg, socket);
+
+                break;
+                
+            case 'bluff':
+
+                break;
+            default:
+                socket.send(JSON.stringify({ type: 'error', message: 'Unknown command' }));
+        }
+    });
+
+    socket.on('close', () => {
+        if (currentGameId && games.has(currentGameId)) {
+            broadcast(currentGameId, { type: 'opponent_disconnected' }, socket);
+            games.delete(currentGameId);
+        }
+    });
 });
+
+console.log("WebSocket server running on ws://localhost:8080");

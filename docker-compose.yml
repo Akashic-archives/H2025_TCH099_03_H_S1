@@ -4,7 +4,7 @@ services:
     build: .
     ports:
       - "80:80"      # Expose Apache on port 80
-      - "8080:8080"  # Expose WebSocket on port 8080
+      - "3000:3000"  # Expose WebSocket on port 8080
     volumes:
       - .:/var/www/html
     depends_on:
