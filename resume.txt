@@ -3,3 +3,10 @@ https://www.sitepoint.com/building-live-score-widget-using-php-web-sockets/
 https://github.com/ratchetphp/Ratchet
 http://socketo.me/
 
+Pas mal assez useless ces ressources.
+
+TODO: 	le server.js determine la couleur de chaque joueur.
+	finir server.js avec l'api et expliquer le html a marc
+
+	add api route for server.js
+
